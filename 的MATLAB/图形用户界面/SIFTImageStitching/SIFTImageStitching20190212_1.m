@@ -1,15 +1,15 @@
-%% ×¼±¸¹¤×÷¿Õ¼ä 
+%% å‡†å¤‡å·¥ä½œç©ºé—´ 
 clc
 clear all
 % close all
-%% ÉèÖÃÍ¼Æ¬Â·¾¶
+%% è®¾ç½®å›¾ç‰‡è·¯å¾„
 image1='sample1-1.jpg';
 image2='sample2-1.jpg';
-%% ÌáÈ¡Í¼Æ¬µÄSIFTÌØÕ÷µã
+%% æå–å›¾ç‰‡çš„SIFTç‰¹å¾ç‚¹
 [im1, des1, loc1] = sift(image1);
 [im2, des2, loc2] = sift(image2);
-%% ²éÕÒÆ¥ÅäÌØÕ÷µã
-distRatio = 0.3;   % ÉèÖÃÌØÕ÷¾àÀëãĞÖµ, ãĞÖµÔ½Ğ¡Ô½ÑÏ¸ñ
+%% æŸ¥æ‰¾åŒ¹é…ç‰¹å¾ç‚¹
+distRatio = 0.3;   % è®¾ç½®ç‰¹å¾è·ç¦»é˜ˆå€¼, é˜ˆå€¼è¶Šå°è¶Šä¸¥æ ¼
 des2t = des2';                          
 for i = 1 : size(des1,1)
    dotprods = des1(i,:) * des2t;        
@@ -22,7 +22,7 @@ for i = 1 : size(des1,1)
 end
 % match = matchFeatures(des1,des2,  'MatchThreshold', 20,'MaxRatio',0.1 );
 
-% ´´½¨Æ½ĞĞÍ¼Ïñ£¬ÏÔÊ¾Æ¥ÅäÌØÕ÷µã
+% åˆ›å»ºå¹³è¡Œå›¾åƒï¼Œæ˜¾ç¤ºåŒ¹é…ç‰¹å¾ç‚¹
 im3 = appendimages(im1,im2);
 figure('Position', [10 10 size(im3,2) size(im3,1)]);
 colormap('gray');
@@ -43,7 +43,7 @@ hold off;
 num = sum(match > 0);
 fprintf('Found %d matches.\n', num);
 
-%È¡³öÆ¥ÅäÌØÕ÷µãpt1 ºÍ pt2  
+%å–å‡ºåŒ¹é…ç‰¹å¾ç‚¹pt1 å’Œ pt2  
 ptlen=sum(match>0);
 pt1=zeros(ptlen,2);
 pt2=zeros(ptlen,2);
@@ -56,22 +56,22 @@ for i = 1: size(des1,1)
      end
 end
 
-%% Í¨¹ıÆ¥ÅäÌØÕ÷µãÄâºÏ¼¸ºÎ±ä»»
-%Í¼1ÎªÄ£°å£¬Í¼2Îª±ä»»Í¼
+%% é€šè¿‡åŒ¹é…ç‰¹å¾ç‚¹æ‹Ÿåˆå‡ ä½•å˜æ¢
+%å›¾1ä¸ºæ¨¡æ¿ï¼Œå›¾2ä¸ºå˜æ¢å›¾
 % % tform = fitgeotrans(pt2,pt1,'Similarity');
 [tform,  inlierPts2, inlierPt1] = estimateGeometricTransform(pt2,pt1,'Similarity');
 
 
-% ¹¹ÔìÄ£°åµÄ±ä»»
+% æ„é€ æ¨¡æ¿çš„å˜æ¢
 tform0 = projective2d(eye(3));
-% ¼ÆËãÍ¼Æ¬±ä»»ºóµÄ·¶Î§
+% è®¡ç®—å›¾ç‰‡å˜æ¢åçš„èŒƒå›´
 im1 = imread(image1);
 im2 = imread(image2);
 imsize1=size(im1);
 imsize2=size(im2);
 imsizem1=max([imsize1(1),imsize2(1)]);
 imsizem2=max([imsize1(2),imsize2(2)]);
-% ¼ÆËãÍ¼Æ¬¿Õ¼ä±ä»»·¶Î§
+% è®¡ç®—å›¾ç‰‡ç©ºé—´å˜æ¢èŒƒå›´
 [xlim, ylim]=outputLimits(tform,[1 imsizem2],[1 imsizem1]);
 xMin=min([1; xlim(:)]);
 xMax=max([imsizem2; xlim(:)]);
@@ -82,20 +82,20 @@ height=round(yMax-yMin);
 ImMerge=zeros(height,width,3);
 xLimits = [xMin xMax];
 yLimits = [yMin yMax];
-% ÒÔĞÂµÄÍ¼Æ¬·¶Î§½¨Á¢×ø±êÏµ
+% ä»¥æ–°çš„å›¾ç‰‡èŒƒå›´å»ºç«‹åæ ‡ç³»
 panoramaView = imref2d([height width], xLimits, yLimits);
-%¶ÔÍ¼1ÊµÊ©±ä»»
+%å¯¹å›¾1å®æ–½å˜æ¢
 Jregistered1 = imwarp(im1,tform0,'OutputView',panoramaView);
 mask1 = imwarp(true(size(im1,1),size(im1,2)),tform0,'OutputView',panoramaView);
-%¶ÔÍ¼2ÊµÊ©±ä»»
+%å¯¹å›¾2å®æ–½å˜æ¢
 Jregistered2 = imwarp(im2,tform,'OutputView',panoramaView);
 mask2 = imwarp(true(size(im2,1),size(im2,2)),tform,'OutputView',panoramaView);
 
-% ²é¿´±ä»»ºóÍ¼Æ¬
+% æŸ¥çœ‹å˜æ¢åå›¾ç‰‡
 figure
 imshowpair(Jregistered1,Jregistered2)
 
-%% Í¼Æ¬Ö±½Óµş¼ÓĞ§¹û
+%% å›¾ç‰‡ç›´æ¥å åŠ æ•ˆæœ
 blender=vision.AlphaBlender('Operation','Binary mask',...
     'MaskSource','Input port');
 ImMerge=step(blender,ImMerge,double(Jregistered2),mask2);
@@ -103,23 +103,23 @@ ImMerge=step(blender,ImMerge,double(Jregistered1),mask1);
 figure;
 imshow(uint8(ImMerge))
 
-%% Í¼Æ¬Ìİ¶È¼ÓÈ¨µş¼ÓĞ§¹û
-% ÌáÈ¡ÕÚÕÖÖØµşÇø
+%% å›¾ç‰‡æ¢¯åº¦åŠ æƒå åŠ æ•ˆæœ
+% æå–é®ç½©é‡å åŒº
 maskcross=mask1&mask2;
 [~,mcol]=find(maskcross>0);
 mcolMin=min(mcol);
 mcolMax=max(mcol);
-%ÁÁ¶ÈÀ­Éì²ÎÊı×¼±¸ 
+%äº®åº¦æ‹‰ä¼¸å‚æ•°å‡†å¤‡ 
 im1cross=Jregistered1(maskcross);
 im2cross=Jregistered2(maskcross);
 im1crossAvg=mean(im1cross);
 im2crossAvg=mean(im2cross);
-% ÌáÈ¡ÕÚÕÖ×ó²à×ø±ê
+% æå–é®ç½©å·¦ä¾§åæ ‡
 [~,mcol1]=find(mask1>0);
 m1colMin=min(mcol1);
 [~,mcol2]=find(mask2>0);
 m2colMin=min(mcol2);
-% ¹¹ÔìÍ¼1È¨ÖØÕÚÕÖ
+% æ„é€ å›¾1æƒé‡é®ç½©
 immask1=ones(size(mask1));
 if m1colMin<m2colMin
     y=linspace(1,0,mcolMax-mcolMin+1);
@@ -130,7 +130,7 @@ else
     ym=repmat(y,size(mask1,1),1);
     immask1(:,mcolMin:mcolMax)=ym;    
 end    
-% ¹¹ÔìÍ¼2È¨ÖØÕÚÕÖ
+% æ„é€ å›¾2æƒé‡é®ç½©
 immask2=ones(size(mask2));
 if m1colMin<m2colMin
     y=linspace(0,1,mcolMax-mcolMin+1);
@@ -143,13 +143,13 @@ else
  
 end
 
-% Í¼ÏñÈÚºÏ
+% å›¾åƒèåˆ
 blender=vision.AlphaBlender('Operation','blend',...
     'OpacitySource','Input port');
 ImMergeBlank=zeros(height,width,3);
 ImMerge1=step(blender,ImMergeBlank,double(Jregistered1),immask1);
 ImMerge2=step(blender,ImMergeBlank,double(Jregistered2)/im2crossAvg*im1crossAvg,immask2);
-%²é¿´ÈÚºÏ½á¹û
+%æŸ¥çœ‹èåˆç»“æœ
 figure;
 imshow(uint8(ImMerge1+ImMerge2))
 imwrite(uint8(ImMerge1+ImMerge2),'merge.jpg')
